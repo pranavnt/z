@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 
 	"github.com/pranavnt/mamba"
@@ -19,9 +18,9 @@ func main() {
 func installPackage(params mamba.Dict) {
 	packageName := params["packageName"]
 
-	resp, err := http.Get(string(packageName))
+	
 
-	fmt.Println(packageName)
+	fmt.Println(string(packageName))
 }
 
 type NPMPackage struct {
