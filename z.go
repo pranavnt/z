@@ -1,6 +1,8 @@
 package main
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -27,11 +29,17 @@ func installPackage(params mamba.Dict) {
 
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	defer resp.Body.Close()
 
 	jsonBody, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	var packageInfo NPMPackage
 
@@ -39,13 +47,32 @@ func installPackage(params mamba.Dict) {
 
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	tarball := packageInfo.Versions["0.1.1"].Dist.Tarball
 
-	DownloadFile(tarball, tarball)
+	r, err := http.Get(tarball)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer r.Body.Close()
 
-	fmt.Println(tarball)
+	f, err := os.Create(getCachePath() + "/" + packageName + ".tgz")
+
+	reader, err := gzip.NewReader(r.Body)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	_, err = io.Copy(f, tar.NewReader(reader))
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func getCachePath() string {
