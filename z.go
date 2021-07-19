@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 
 	"github.com/pranavnt/mamba"
@@ -18,9 +20,20 @@ func main() {
 func installPackage(params mamba.Dict) {
 	packageName := params["packageName"]
 
-	
+	fmt.Println("http://registry.npmjs.org/" + packageName)
 
-	fmt.Println(string(packageName))
+	resp, err := http.Get("http://registry.npmjs.org/" + packageName)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer resp.Body.Close()
+	jsonBody, err := io.ReadAll(resp.Body)
+
+	body := string(jsonBody)
+	fmt.Println(body)
+
 }
 
 type NPMPackage struct {
