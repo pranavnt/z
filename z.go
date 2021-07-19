@@ -40,8 +40,7 @@ func installPackage(params mamba.Dict) {
 		fmt.Println(err)
 	}
 
-	fmt.Println(packageInfo.Versions["0.1.1"].Dist.Tarball)
-
+	
 }
 
 func getCachePath() string {
