@@ -30,6 +30,7 @@ func installPackage(params mamba.Dict) {
 	}
 
 	defer resp.Body.Close()
+
 	jsonBody, err := io.ReadAll(resp.Body)
 
 	var packageInfo NPMPackage
@@ -40,7 +41,11 @@ func installPackage(params mamba.Dict) {
 		fmt.Println(err)
 	}
 
-	
+	tarball := packageInfo.Versions["0.1.1"].Dist.Tarball
+
+	DownloadFile(tarball, tarball)
+
+	fmt.Println(tarball)
 }
 
 func getCachePath() string {
