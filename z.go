@@ -42,12 +42,29 @@ func installPackage(params mamba.Dict) {
 
 	fmt.Println(packageInfo.Versions["0.1.1"].Dist.Tarball)
 
-	path := os.Getenv("Z_PKG_CACHE_PATH")
-
-	if path=="" {}
-
 }
 
+func getCachePath() string {
+	path := os.Getenv("Z_PKG_CACHE_PATH")
+
+	if path != "" {
+		return path
+	}
+
+	dir, err := os.UserHomeDir()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	path = dir
+
+	path += "/.z"
+
+	os.Setenv("Z_PKG_CACHE_PATH", path)
+
+	return path
+}
 
 type NPMPackage struct {
 	ID       string `json:"_id"`
@@ -56,7 +73,7 @@ type NPMPackage struct {
 	DistTags struct {
 		Latest string `json:"latest"`
 	} `json:"dist-tags"`
-	Versions    map[string] PackageVersion `json:"versions"`
+	Versions    map[string]PackageVersion `json:"versions"`
 	Maintainers []struct {
 		Name  string `json:"name"`
 		Email string `json:"email"`
