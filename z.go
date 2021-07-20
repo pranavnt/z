@@ -13,24 +13,21 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/pranavnt/mamba"
 )
 
 func main() {
-	app := mamba.New()
-
-	app.AddCommand("install {packageName}", installPackage)
-
-	app.Run(os.Args)
+	// app := mamba.New()
+	// app.AddCommand("install {packageName}", addPackage)
+	// app.Run(os.Args)
+	addPackage("kobra.js", "0.1.1")
 }
 
-func installPackage(params mamba.Dict) {
-	packageName := params["packageName"]
+func addPackage(name string, version string) {
+	full := name + "@" + version
 
-	fmt.Println("http://registry.npmjs.org/" + packageName)
+	fmt.Println("http://registry.npmjs.org/" + name)
 
-	resp, err := http.Get("http://registry.npmjs.org/" + packageName)
+	resp, err := http.Get("http://registry.npmjs.org/" + name)
 
 	if err != nil {
 		fmt.Println(err)
@@ -43,19 +40,18 @@ func installPackage(params mamba.Dict) {
 
 	if err != nil {
 		fmt.Println(err)
-		return
 	}
 
-	var packageInfo NPMPackage
+	var pkgInfo NPMPackage
 
-	err = json.Unmarshal(jsonBody, &packageInfo)
+	err = json.Unmarshal(jsonBody, &pkgInfo)
 
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	tarball := packageInfo.Versions["0.1.1"].Dist.Tarball
+	tarball := pkgInfo.Versions[version].Dist.Tarball
 
 	r, err := http.Get(tarball)
 
@@ -65,13 +61,11 @@ func installPackage(params mamba.Dict) {
 
 	defer r.Body.Close()
 
-	err = Untar(r.Body, getCachePath()+"/",packageName)
+	err = Untar(r.Body, getCachePath()+"/", full)
 
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	return
 }
 
 func getCachePath() string {
