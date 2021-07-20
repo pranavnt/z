@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -24,27 +23,14 @@ func main() {
 	fmt.Println(getPackageJSON().Dependencies)
 }
 
-func getPackageJSON() PackageJSON {
-	data, err := ioutil.ReadFile("./package.json")
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	var packageJSON PackageJSON
-
-	err = json.Unmarshal(data, &packageJSON)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return packageJSON
-}
-
-func getInfo() []string {
+func install(depMap map[string]string) []string {
 	var deps []string
-	return deps	
+
+	for key, val := range depMap {
+		deps = append(deps, key+"|"+val)
+	}
+
+	return deps
 }
 
 func addPackage(name string, version string) {
@@ -97,7 +83,7 @@ func getCachePath() string {
 	path := os.Getenv("Z_PKG_CACHE_PATH")
 
 	if path != "" {
-	return path
+		return path
 	}
 
 	dir, err := os.UserHomeDir()
