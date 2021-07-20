@@ -25,6 +25,26 @@ func main() {
 	app.Run(os.Args)
 }
 
+func installPackageFromInfo(pkg NPMPackage, version string) {
+	url := pkg.Versions[version].Dist.Tarball
+
+	resp, err := http.Get(url)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer resp.Body.Close()
+
+	err = Untar(resp.Body, getCachePath()+"/", pkg.Name)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return
+}
+
 func installPackage(params mamba.Dict) {
 	packageName := params["packageName"]
 
@@ -55,23 +75,7 @@ func installPackage(params mamba.Dict) {
 		return
 	}
 
-	tarball := packageInfo.Versions["0.1.1"].Dist.Tarball
-
-	r, err := http.Get(tarball)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	defer r.Body.Close()
-
-	err = Untar(r.Body, getCachePath()+"/",packageName)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return
+	installPackageFromInfo(packageInfo,"0.1.1") 
 }
 
 func getCachePath() string {
@@ -189,14 +193,6 @@ func untar(r io.Reader, dir string, packageName string) (err error) {
 	t0 := time.Now()
 	nFiles := 0
 	madeDir := map[string]bool{}
-	defer func() {
-		td := time.Since(t0)
-		if err == nil {
-			log.Printf("extracted tarball into %s: %d files, %d dirs (%v)", dir, nFiles, len(madeDir), td)
-		} else {
-			log.Printf("error extracting tarball into %s after %d files, %d dirs, %v: %v", dir, nFiles, len(madeDir), td, err)
-		}
-	}()
 	zr, err := gzip.NewReader(r)
 	if err != nil {
 		return fmt.Errorf("requires gzip-compressed body: %v", err)
