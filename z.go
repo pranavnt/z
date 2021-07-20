@@ -109,51 +109,18 @@ func getCachePath() string {
 }
 
 type PackageJSON struct {
-	Name         string `json:"name"`
-	Version      string `json:"version"`
-	Private      bool   `json:"private"`
-	Dependencies map[string][string] `json:dependencies`
-	Scripts struct {
-		Dev            string `json:"dev"`
-		Build          string `json:"build"`
-		Start          string `json:"start"`
-		GqlCodegen     string `json:"gql-codegen"`
-		Analyze        string `json:"analyze"`
-		AnalyzeServer  string `json:"analyze:server"`
-		AnalyzeBrowser string `json:"analyze:browser"`
-	} `json:"scripts"`
-	EslintConfig struct {
-		Extends string `json:"extends"`
-	} `json:"eslintConfig"`
-	Browserslist struct {
-		Production  string   `json:"production"`
-		Development []string `json:"development"`
-	} `json:"browserslist"`
-	DevDependencies struct {
-		GraphqlCodegenCli                   string `json:"@graphql-codegen/cli"`
-		GraphqlCodegenIntrospection         string `json:"@graphql-codegen/introspection"`
-		GraphqlCodegenTypescript            string `json:"@graphql-codegen/typescript"`
-		GraphqlCodegenTypescriptOperations  string `json:"@graphql-codegen/typescript-operations"`
-		GraphqlCodegenTypescriptReactApollo string `json:"@graphql-codegen/typescript-react-apollo"`
-		NextBundleAnalyzer                  string `json:"@next/bundle-analyzer"`
-		Autoprefixer                        string `json:"autoprefixer"`
-		CrossEnv                            string `json:"cross-env"`
-		EslintConfigNext                    string `json:"eslint-config-next"`
-		Prettier                            string `json:"prettier"`
-	} `json:"devDependencies"`
-	Resolutions struct {
-		Webpack string `json:"webpack"`
-	} `json:"resolutions"`
-	Description string `json:"description"`
+	Name            string            `json:"name"`
+	Version         string            `json:"version"`
+	Private         bool              `json:"private"`
+	Dependencies    map[string]string `json:"dependencies"`
+	Scripts         map[string]string `json:"scripts"`
+	DevDependencies map[string]string `json:"devDependencies"`
 }
 
 type NPMPackage struct {
 	ID       string `json:"_id"`
 	Rev      string `json:"_rev"`
 	Name     string `json:"name"`
-	DistTags struct {
-		Latest string `json:"latest"`
-	} `json:"dist-tags"`
 	Versions    map[string]PackageVersion `json:"versions"`
 	Maintainers []struct {
 		Name  string `json:"name"`
