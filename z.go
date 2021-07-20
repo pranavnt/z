@@ -79,33 +79,6 @@ func addPackage(name string, version string) {
 	}
 }
 
-func getCachePath() string {
-	path := os.Getenv("Z_PKG_CACHE_PATH")
-
-	if path != "" {
-		return path
-	}
-
-	dir, err := os.UserHomeDir()
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	path = dir
-
-	path += "/.z"
-
-	err = os.Mkdir(path, 0777)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	os.Setenv("Z_PKG_CACHE_PATH", path)
-
-	return path
-}
 
 type PackageJSON struct {
 	Name            string            `json:"name"`
