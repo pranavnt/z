@@ -19,19 +19,32 @@ import (
 func main() {
 	// app := mamba.New()
 	// app.AddCommand("install {packageName}", addPackage)
-	// app.Run(os.Args)
+	// app.Run(os7.Args)
 	// addPackage("kobra.js", "0.1.1")
-	getPackageJSON()
+	fmt.Println(getPackageJSON().Dependencies)
 }
 
-func getPackageJSON() {
-	dat, err := ioutil.ReadFile("./package.json")
+func getPackageJSON() PackageJSON {
+	data, err := ioutil.ReadFile("./package.json")
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Print(string(dat))
+	var packageJSON PackageJSON
+
+	err = json.Unmarshal(data, &packageJSON)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return packageJSON
+}
+
+func getInfo() []string {
+	var deps []string
+	return deps	
 }
 
 func addPackage(name string, version string) {
@@ -84,7 +97,7 @@ func getCachePath() string {
 	path := os.Getenv("Z_PKG_CACHE_PATH")
 
 	if path != "" {
-		return path
+	return path
 	}
 
 	dir, err := os.UserHomeDir()
@@ -118,9 +131,9 @@ type PackageJSON struct {
 }
 
 type NPMPackage struct {
-	ID       string `json:"_id"`
-	Rev      string `json:"_rev"`
-	Name     string `json:"name"`
+	ID          string                    `json:"_id"`
+	Rev         string                    `json:"_rev"`
+	Name        string                    `json:"name"`
 	Versions    map[string]PackageVersion `json:"versions"`
 	Maintainers []struct {
 		Name  string `json:"name"`
