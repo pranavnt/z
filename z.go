@@ -51,7 +51,7 @@ func getDeps(depMap map[string]string) []string {
 	return deps
 }
 
-func addPackage(name string, version string) {
+func addPackage(name string, version string) map[string]string {
 	full := name + "@" + version
 
 	fmt.Println("http://registry.npmjs.org/" + name)
@@ -98,4 +98,6 @@ func addPackage(name string, version string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	return pkgInfo.Versions[version].Dependencies
 }
