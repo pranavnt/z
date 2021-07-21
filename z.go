@@ -4,22 +4,48 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"os"
+	"strings"
 )
 
 func main() {
 	// app := mamba.New()
 	// app.AddCommand("install {packageName}", addPackage)
 	// app.Run(os7.Args)
-	addPackage("kobra.js", "0.1.1")
-	fmt.Println(getPackageJSON().Dependencies)
+	install()
+
+	addPackage("notistack", "1.0.9")
 }
 
-func install(depMap map[string]string) []string {
+func install() {
+
+	if !doesLockfileExist() {
+		os.Create("./z.toml")
+
+		packageJSON := getPackageJSON()
+
+		deps := getDeps(packageJSON.Dependencies)
+
+		fmt.Println("deps: ", deps)
+
+		for _, el := range deps {
+			fmt.Println(el)
+			arr := strings.Split(el, "|")
+			fmt.Println(arr[0], arr[1])
+			addPackage(arr[0], arr[1])
+		}
+	} else {
+		// TODO: install with lockfile
+	}
+}
+
+func getDeps(depMap map[string]string) []string {
 	var deps []string
 
 	for key, val := range depMap {
-		deps = append(deps, key+"|"+val)
+		deps = append(deps, key+"|"+strings.Trim(val, "^"))
 	}
 
 	return deps
@@ -33,7 +59,7 @@ func addPackage(name string, version string) {
 	resp, err := http.Get("http://registry.npmjs.org/" + name)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 
@@ -42,7 +68,7 @@ func addPackage(name string, version string) {
 	jsonBody, err := io.ReadAll(resp.Body)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
 	var pkgInfo NPMPackage
@@ -50,23 +76,26 @@ func addPackage(name string, version string) {
 	err = json.Unmarshal(jsonBody, &pkgInfo)
 
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatal(err)
 	}
 
 	tarball := pkgInfo.Versions[version].Dist.Tarball
 
-	r, err := http.Get(tarball)
+	// fmt.Println(pkgInfo.Versions)
+	// fmt.Println(pkgInfo.Versions[version])
+	fmt.Println(pkgInfo.Versions[version].Dist.Tarball)
+
+	resp, err = http.Get(tarball)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
-	defer r.Body.Close()
+	defer resp.Body.Close()
 
-	err = Untar(r.Body, getCachePath()+"/", full)
+	err = Untar(resp.Body, getCachePath()+"/", full)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 }

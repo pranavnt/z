@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -17,17 +17,19 @@ func getCachePath() string {
 	dir, err := os.UserHomeDir()
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
 	path = dir
 
 	path += "/.z"
 
-	err = os.Mkdir(path, 0777)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err = os.Mkdir(path, 0777)
+	}
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
 	os.Setenv("Z_PKG_CACHE_PATH", path)
@@ -35,11 +37,20 @@ func getCachePath() string {
 	return path
 }
 
+func doesLockfileExist() bool {
+	if _, err := os.Stat("./z.toml"); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
+}
+
 func getPackageJSON() PackageJSON {
 	data, err := ioutil.ReadFile("./package.json")
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
 	var packageJSON PackageJSON
@@ -47,7 +58,7 @@ func getPackageJSON() PackageJSON {
 	err = json.Unmarshal(data, &packageJSON)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
 	return packageJSON

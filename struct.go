@@ -34,10 +34,7 @@ type PackageVersion struct {
 	Typings          string `json:"typings"`
 	PeerDependencies struct {
 	} `json:"peerDependencies"`
-	Name   string `json:"name"`
-	Author struct {
-		Name string `json:"name"`
-	} `json:"author"`
+	Name      string `json:"name"`
 	Module    string `json:"module"`
 	SizeLimit []struct {
 		Path  string `json:"path"`
