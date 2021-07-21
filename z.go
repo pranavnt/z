@@ -38,6 +38,7 @@ func install() {
 		}
 	} else {
 		// TODO: install with lockfile
+
 	}
 }
 
